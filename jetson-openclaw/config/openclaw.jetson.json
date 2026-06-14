@@ -1,0 +1,74 @@
+{
+  "agents": {
+    "defaults": {
+      "workspace": "~/.openclaw/workspace",
+      "model": {
+        "primary": "ollama/llama3.2:1b"
+      },
+      "memorySearch": {
+        "enabled": false
+      }
+    }
+  },
+  "gateway": {
+    "mode": "local",
+    "port": 18789,
+    "bind": "loopback",
+    "auth": {
+      "mode": "token"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "ollama": {
+        "enabled": true
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "ollama": {
+        "baseUrl": "http://127.0.0.1:11434",
+        "api": "ollama",
+        "apiKey": "OLLAMA_API_KEY",
+        "timeoutSeconds": 300,
+        "models": [
+          {
+            "id": "llama3.2:1b",
+            "name": "Llama 3.2 1B (Jetson default)",
+            "contextWindow": 8192,
+            "maxTokens": 2048,
+            "params": {
+              "keep_alive": "5m",
+              "num_ctx": 8192
+            }
+          },
+          {
+            "id": "qwen2.5:1.5b",
+            "name": "Qwen 2.5 1.5B (better tools)",
+            "contextWindow": 8192,
+            "maxTokens": 2048,
+            "params": {
+              "keep_alive": "5m",
+              "num_ctx": 8192
+            }
+          },
+          {
+            "id": "llama3.2:3b",
+            "name": "Llama 3.2 3B (stop other GPU apps first)",
+            "contextWindow": 8192,
+            "maxTokens": 2048,
+            "params": {
+              "keep_alive": "2m",
+              "num_ctx": 4096
+            }
+          }
+        ]
+      }
+    }
+  },
+  "tools": {
+    "profile": "coding"
+  }
+}

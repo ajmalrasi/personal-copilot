@@ -1,0 +1,49 @@
+# OpenClaw Gateway — system-level unit for always-on boot (no user lingering required)
+#
+# Install:
+#   sudo cp openclaw-gateway.system.service /etc/systemd/system/openclaw-gateway.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now openclaw-gateway.service
+#
+# Prefer `openclaw gateway install` for user-level service (already done on this host).
+
+[Unit]
+Description=OpenClaw Gateway (Jetson Orin Nano)
+After=network-online.target ollama.service
+Wants=network-online.target
+StartLimitBurst=5
+StartLimitIntervalSec=60
+
+[Service]
+Type=simple
+User=ajmalrasi
+Group=ajmalrasi
+WorkingDirectory=/home/ajmalrasi
+
+# Load secrets from env file (never commit real values)
+EnvironmentFile=-/home/ajmalrasi/.openclaw/.env
+
+Environment=HOME=/home/ajmalrasi
+Environment=PATH=/home/ajmalrasi/.openclaw/bin:/home/ajmalrasi/.openclaw/tools/node-v22.22.0/bin:/usr/local/bin:/usr/bin:/bin
+Environment=NODE_COMPILE_CACHE=/var/tmp/openclaw-compile-cache
+Environment=OPENCLAW_NO_RESPAWN=1
+Environment=NODE_OPTIONS=--max-old-space-size=384
+Environment=OPENCLAW_GATEWAY_PORT=18789
+
+ExecStartPre=/bin/mkdir -p /var/tmp/openclaw-compile-cache
+ExecStart=/home/ajmalrasi/.openclaw/bin/openclaw gateway --port 18789
+
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+TimeoutStartSec=60
+SuccessExitStatus=0 143
+KillMode=control-group
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=openclaw-gateway
+
+[Install]
+WantedBy=multi-user.target
